@@ -21,8 +21,15 @@ import {
 	Undo2,
 } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
+import { ActiveTool } from "../types"
+import { cn } from "@/lib/utils"
 
-export function Navbar() {
+interface NavbarProps {
+	activeTool: ActiveTool
+	onChangeActiveTool: (tool: ActiveTool) => void
+}
+
+export function Navbar({ activeTool, onChangeActiveTool }: NavbarProps) {
 	return (
 		<nav className="w-full flex items-center p-4 h-[68px] gap-x-8 border-b lg:pl-[34px]">
 			<Logo />
@@ -50,7 +57,13 @@ export function Navbar() {
 				<Separator orientation="vertical" className="mx-2"></Separator>
 
 				<Hint label="Select" side="bottom" sideOffset={10}>
-					<Button variant="ghost" size="icon" onClick={() => {}} className="">
+					<Button
+						variant="ghost"
+						size="icon"
+						onClick={() => {
+							onChangeActiveTool("select")
+						}}
+						className={cn(activeTool === "select" && "bg-gray-100")}>
 						<MousePointerClick className="size-4" />
 					</Button>
 				</Hint>
