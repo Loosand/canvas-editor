@@ -15,7 +15,6 @@ import {
 import {
 	ChevronDown,
 	Download,
-	Ghost,
 	MousePointerClick,
 	Redo2,
 	Undo2,

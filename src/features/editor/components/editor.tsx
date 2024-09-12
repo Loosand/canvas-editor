@@ -11,13 +11,18 @@ import { ActiveTool } from "@/features/editor/types"
 import { ShapeSidebar } from "./shape-sidebar"
 import { FillColorSidebar } from "./fill-color-sidebar"
 
-export function Editor() {
+/**
+ * 画布编辑器组件
+ * @returns {JSX.Element} 画布编辑器组件
+ */
+export function Editor(): JSX.Element {
 	const [activeTool, setActiveTool] = useState<ActiveTool>("select")
 	const { init, editor } = useEditor()
 
 	const canvasRef = useRef(null)
 	const containerRef = useRef(null)
 
+	// 初始化画布
 	useEffect(() => {
 		const canvas = new fabric.Canvas(canvasRef.current, {
 			controlsAboveOverlay: true,
@@ -34,6 +39,10 @@ export function Editor() {
 		}
 	}, [init])
 
+	/**
+	 * 更改当前活动工具
+	 * @param {ActiveTool} tool - 要设置为活动的工具
+	 */
 	const onChangeActiveTool = useCallback(
 		(tool: ActiveTool) => {
 			if (tool === activeTool) {
@@ -41,9 +50,11 @@ export function Editor() {
 			}
 
 			if (tool === "draw") {
+				// 处理绘图工具的逻辑
 			}
 
 			if (activeTool === "draw") {
+				// 处理取消绘图工具的逻辑
 			}
 
 			setActiveTool(tool)

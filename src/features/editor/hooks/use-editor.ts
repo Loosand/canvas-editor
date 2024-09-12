@@ -15,6 +15,11 @@ import {
 import { useCanvasEvents } from "./use-canvas-events"
 import { isTextType } from "../utils"
 
+/**
+ * 构建编辑器对象
+ * @param {BuildEditorProps} props - 构建编辑器所需的属性
+ * @returns {Editor} 编辑器对象
+ */
 const buildEditor = ({
 	canvas,
 	fillColor,
@@ -24,10 +29,18 @@ const buildEditor = ({
 	strokeWidth,
 	setStrokeWidth,
 }: BuildEditorProps): Editor => {
+	/**
+	 * 获取工作区对象
+	 * @returns {fabric.Object | undefined} 工作区对象
+	 */
 	const getWorkspace = () => {
 		return canvas.getObjects().find((object) => object.name === "clip")
 	}
 
+	/**
+	 * 将对象居中到工作区
+	 * @param {fabric.Object} object - 需要居中的对象
+	 */
 	const center = (object: fabric.Object) => {
 		const workspace = getWorkspace()
 		const center = workspace?.getCenterPoint()
@@ -37,6 +50,10 @@ const buildEditor = ({
 		canvas._centerObject(object, center)
 	}
 
+	/**
+	 * 将对象添加到画布并设置为活动对象
+	 * @param {fabric.Object} object - 需要添加到画布的对象
+	 */
 	const addToCanvas = (object: fabric.Object) => {
 		center(object)
 		canvas.add(object)
@@ -44,6 +61,10 @@ const buildEditor = ({
 	}
 
 	return {
+		/**
+		 * 更改填充颜色
+		 * @param {string} value - 新的填充颜色
+		 */
 		changeFillColor: (value: string) => {
 			setFillColor(value)
 			canvas.getActiveObjects().forEach((object) => {
@@ -51,6 +72,10 @@ const buildEditor = ({
 			})
 			canvas.renderAll()
 		},
+		/**
+		 * 更改描边颜色
+		 * @param {string} value - 新的描边颜色
+		 */
 		changeStrokeColor: (value: string) => {
 			setStrokeColor(value)
 			canvas.getActiveObjects().forEach((object) => {
@@ -60,12 +85,19 @@ const buildEditor = ({
 				}
 			})
 		},
+		/**
+		 * 更改描边宽度
+		 * @param {number} value - 新的描边宽度
+		 */
 		changeStrokeWidth: (value: number) => {
 			setStrokeWidth(value)
 			canvas.getActiveObjects().forEach((object) => {
 				object.set({ strokeWidth: value })
 			})
 		},
+		/**
+		 * 添加圆形到画布
+		 */
 		addCircle: () => {
 			const object = new fabric.Circle({
 				...CIRCLE_OPTIONS,
@@ -76,6 +108,9 @@ const buildEditor = ({
 
 			addToCanvas(object)
 		},
+		/**
+		 * 添加圆角矩形到画布
+		 */
 		addSoftRectangle: () => {
 			const object = new fabric.Rect({
 				...RECTANGLE_OPTIONS,
@@ -88,6 +123,9 @@ const buildEditor = ({
 
 			addToCanvas(object)
 		},
+		/**
+		 * 添加矩形到画布
+		 */
 		addRectangle: () => {
 			const object = new fabric.Triangle({
 				...TRIANGLE_OPTIONS,
@@ -98,6 +136,9 @@ const buildEditor = ({
 
 			addToCanvas(object)
 		},
+		/**
+		 * 添加三角形到画布
+		 */
 		addTriangle: () => {
 			const object = new fabric.Triangle({
 				...TRIANGLE_OPTIONS,
@@ -108,6 +149,9 @@ const buildEditor = ({
 
 			addToCanvas(object)
 		},
+		/**
+		 * 添加倒三角形到画布
+		 */
 		addInverseTriangle: () => {
 			const HEIGHT = TRIANGLE_OPTIONS.height
 			const WIDTH = TRIANGLE_OPTIONS.width
@@ -128,6 +172,9 @@ const buildEditor = ({
 
 			addToCanvas(object)
 		},
+		/**
+		 * 添加菱形到画布
+		 */
 		addDiamond: () => {
 			const HEIGHT = DIAMOND_OPTIONS.height
 			const WIDTH = DIAMOND_OPTIONS.width
@@ -155,6 +202,10 @@ const buildEditor = ({
 	}
 }
 
+/**
+ * 自定义钩子，用于初始化和管理编辑器
+ * @returns {{ init: function, editor: Editor | undefined }} 初始化函数和编辑器对象
+ */
 export const useEditor = () => {
 	const [canvas, setCanvas] = useState<fabric.Canvas | null>(null)
 	const [container, setContainer] = useState<HTMLDivElement | null>(null)
@@ -190,6 +241,10 @@ export const useEditor = () => {
 		return undefined
 	}, [canvas])
 
+	/**
+	 * 初始化画布和容器
+	 * @param {{ initialCanvas: fabric.Canvas, initialContainer: HTMLDivElement }} param0 - 初始画布和容器
+	 */
 	const init = useCallback(
 		({
 			initialCanvas,

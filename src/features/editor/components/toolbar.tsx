@@ -1,5 +1,5 @@
 import { ActiveTool, Editor } from "../types"
-import { Hint } from "../../../components/hint"
+import { Hint } from "@/components/hint"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
