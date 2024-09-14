@@ -1,3 +1,9 @@
+import Link from "next/link"
+
 export default function Home() {
-	return <div>123</div>
+	return (
+		<div>
+			<Link href="/editor/slug">Editor</Link>
+		</div>
+	)
 }

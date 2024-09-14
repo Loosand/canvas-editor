@@ -169,15 +169,15 @@ export const TEXT_OPTIONS = {
 }
 
 export interface EditorHookProps {
-	defaultState?: string
-	defaultWidth?: number
-	defaultHeight?: number
+	// defaultState?: string
+	// defaultWidth?: number
+	// defaultHeight?: number
 	clearSelectionCallback?: () => void
-	saveCallback?: (values: {
-		json: string
-		height: number
-		width: number
-	}) => void
+	// saveCallback?: (values: {
+	// 	json: string
+	// 	height: number
+	// 	width: number
+	// }) => void
 }
 
 export type BuildEditorProps = {
@@ -193,7 +193,7 @@ export type BuildEditorProps = {
 	fillColor: string
 	strokeColor: string
 	strokeWidth: number
-	// selectedObjects: fabric.Object[]
+	selectedObjects: fabric.Object[]
 	// strokeDashArray: number[]
 	// fontFamily: string
 	// setStrokeDashArray: (value: number[]) => void
@@ -260,9 +260,9 @@ export interface Editor {
 	addInverseTriangle: () => void
 	addDiamond: () => void
 	// canvas: fabric.Canvas
-	// getActiveFillColor: () => string
-	// getActiveStrokeColor: () => string
+	getActiveFillColor: () => string
+	getActiveStrokeColor: () => string
 	// getActiveStrokeWidth: () => number
 	// getActiveStrokeDashArray: () => number[]
-	// selectedObjects: fabric.Object[]
+	selectedObjects: fabric.Object[]
 }

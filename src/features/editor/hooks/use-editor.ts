@@ -6,6 +6,7 @@ import {
 	CIRCLE_OPTIONS,
 	DIAMOND_OPTIONS,
 	Editor,
+	EditorHookProps,
 	FILL_COLOR,
 	RECTANGLE_OPTIONS,
 	STROKE_COLOR,
@@ -28,6 +29,7 @@ const buildEditor = ({
 	setStrokeColor,
 	strokeWidth,
 	setStrokeWidth,
+	selectedObjects,
 }: BuildEditorProps): Editor => {
 	/**
 	 * 获取工作区对象
@@ -79,11 +81,16 @@ const buildEditor = ({
 		changeStrokeColor: (value: string) => {
 			setStrokeColor(value)
 			canvas.getActiveObjects().forEach((object) => {
+				// Text types don't have stroke
 				if (isTextType(object.type)) {
-					object.set({ stroke: value })
+					object.set({ fill: value })
 					return
 				}
+
+				object.set({ stroke: value })
 			})
+			canvas.freeDrawingBrush.color = value
+			canvas.renderAll()
 		},
 		/**
 		 * 更改描边宽度
@@ -95,9 +102,6 @@ const buildEditor = ({
 				object.set({ strokeWidth: value })
 			})
 		},
-		/**
-		 * 添加圆形到画布
-		 */
 		addCircle: () => {
 			const object = new fabric.Circle({
 				...CIRCLE_OPTIONS,
@@ -108,37 +112,28 @@ const buildEditor = ({
 
 			addToCanvas(object)
 		},
-		/**
-		 * 添加圆角矩形到画布
-		 */
 		addSoftRectangle: () => {
+			const object = new fabric.Rect({
+				...RECTANGLE_OPTIONS,
+				rx: 50,
+				ry: 50,
+				fill: fillColor,
+				stroke: strokeColor,
+				strokeWidth: strokeWidth,
+			})
+
+			addToCanvas(object)
+		},
+		addRectangle: () => {
 			const object = new fabric.Rect({
 				...RECTANGLE_OPTIONS,
 				fill: fillColor,
 				stroke: strokeColor,
 				strokeWidth: strokeWidth,
-				rx: 50,
-				ry: 50,
 			})
 
 			addToCanvas(object)
 		},
-		/**
-		 * 添加矩形到画布
-		 */
-		addRectangle: () => {
-			const object = new fabric.Triangle({
-				...TRIANGLE_OPTIONS,
-				fill: fillColor,
-				stroke: strokeColor,
-				strokeWidth: strokeWidth,
-			})
-
-			addToCanvas(object)
-		},
-		/**
-		 * 添加三角形到画布
-		 */
 		addTriangle: () => {
 			const object = new fabric.Triangle({
 				...TRIANGLE_OPTIONS,
@@ -149,9 +144,6 @@ const buildEditor = ({
 
 			addToCanvas(object)
 		},
-		/**
-		 * 添加倒三角形到画布
-		 */
 		addInverseTriangle: () => {
 			const HEIGHT = TRIANGLE_OPTIONS.height
 			const WIDTH = TRIANGLE_OPTIONS.width
@@ -172,9 +164,6 @@ const buildEditor = ({
 
 			addToCanvas(object)
 		},
-		/**
-		 * 添加菱形到画布
-		 */
 		addDiamond: () => {
 			const HEIGHT = DIAMOND_OPTIONS.height
 			const WIDTH = DIAMOND_OPTIONS.width
@@ -196,9 +185,28 @@ const buildEditor = ({
 			addToCanvas(object)
 		},
 		canvas,
+		getActiveFillColor: () => {
+			const selectedObject = selectedObjects[0]
+
+			if (!selectedObject) return fillColor
+
+			const value = selectedObject.get("fill") || fillColor
+
+			return value as string
+		},
+		getActiveStrokeColor: () => {
+			const selectedObject = selectedObjects[0]
+
+			if (!selectedObject) return strokeColor
+
+			const value = selectedObject.get("stroke") || strokeColor
+
+			return value
+		},
 		fillColor,
 		strokeColor,
 		strokeWidth,
+		selectedObjects,
 	}
 }
 
@@ -206,7 +214,7 @@ const buildEditor = ({
  * 自定义钩子，用于初始化和管理编辑器
  * @returns {{ init: function, editor: Editor | undefined }} 初始化函数和编辑器对象
  */
-export const useEditor = () => {
+export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
 	const [canvas, setCanvas] = useState<fabric.Canvas | null>(null)
 	const [container, setContainer] = useState<HTMLDivElement | null>(null)
 	const [selectedObjects, setSelectedObjects] = useState<fabric.Object[]>([])
@@ -223,6 +231,7 @@ export const useEditor = () => {
 	useCanvasEvents({
 		canvas,
 		setSelectedObjects,
+		clearSelectionCallback,
 	})
 
 	const editor = useMemo(() => {
@@ -232,6 +241,7 @@ export const useEditor = () => {
 				fillColor,
 				strokeColor,
 				strokeWidth,
+				selectedObjects,
 				setFillColor,
 				setStrokeColor,
 				setStrokeWidth,
@@ -239,7 +249,7 @@ export const useEditor = () => {
 		}
 
 		return undefined
-	}, [canvas])
+	}, [canvas, fillColor, strokeColor, strokeWidth, selectedObjects])
 
 	/**
 	 * 初始化画布和容器
